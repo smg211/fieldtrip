@@ -52,74 +52,47 @@ for g = 1:ngrids % grid loop
   fprintf(fid, '#Dimensions\n');
   
   % determine grid dimensions
-  if isequal(numel(Grid2Elec{g}), 256)
-    GridDim(1) = 16; GridDim(2) = 16;
-  elseif isequal(numel(Grid2Elec{g}), 64)
-    GridDim(1) = 8; GridDim(2) = 8;
-  elseif isequal(numel(Grid2Elec{g}), 48)
-    e6 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(6)]),:);
-    e7 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(7)]),:);
-    d6to7 = sqrt(sum((e6-e7).^2)); % distance of elec 6 to 7
-    if d6to7 < 15
-      GridDim(1) = 6; GridDim(2) = 8;
+  if numel(ElecNrs(Grid2Elec{g})) < max(ElecNrs(Grid2Elec{g}))
+    warning('%s has less electrodes than would be expected from the highest numbered electrode in this grid, which may lead to an incorrect output', GridDescript{g});
+  end
+  
+  pos = []; % positions of electrodes for this tract
+  for e = 1:length(Grid2Elec{g})
+    if ~isempty(match_str(elec.label, [GridDescript{g} num2str(e)]))
+      pos(e, :) = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(e)]),:);
     else
-      GridDim(1) = 8; GridDim(2) = 6;
+      warning('%s%s does not exist, so assuming the electrodes are listed in sequential order in elec.label', GridDescript{g}, num2str(e));
+      pos(e, :) = elec.elecpos(Grid2Elec{g}(e), :);
     end
-  elseif isequal(numel(Grid2Elec{g}), 32)
-    e4 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(4)]),:);
-    e5 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(5)]),:);
-    d4to5 = sqrt(sum((e4-e5).^2)); % distance of elec 4 to 5
-    if d4to5 < 15 % within 15 mm
-      GridDim(1) = 4; GridDim(2) = 8;
+  end
+  
+  d_bwelec = []; % overall distance between consecutive pairs of electrodes
+  for e = 1:length(pos)-1;
+    d_bwelec(e) = sqrt(sum((pos(e+1,:)-pos(e,:)).^2));
+  end
+  
+  elec_space = median(d_bwelec); % find the electrode spacing
+  elec_space_diff = elec_space-d_bwelec; % find the difference between the electrode spacing and the distance between consecutive pairs of electrodes
+  
+  if any(abs(elec_space_diff) > 0.5*elec_space) % if there is a significant jump in the difference between the positions of sequential electrodes
+    elec_skip = find(abs(elec_space_diff) > 0.5*elec_space);
+    if numel(elec_skip) > 1 % if there is more than one point where the difference between electrode positions has a significant jump
+      rowlength = diff(elec_skip); % the difference in electrode number between electrodes where there is a significant jump
+      if ~any(diff(rowlength)) % if rowlength is consistent
+        GridDim(2) = mean(diff(elec_skip));
+        GridDim(1) = numel(elec_skip)+1;
+      else
+        warning('%s cannot be accurately described in 2 dimensions')
+        GridDim(2) = rowlength(1);
+        GridDim(1) = numel(elec_skip)+1;
+      end
     else
-      GridDim(1) = 8; GridDim(2) = 4;
+      GridDim(2) = elec_skip;
+      GridDim(1) = numel(elec_skip)+1;
     end
-  elseif isequal(numel(Grid2Elec{g}), 20)
-    e4 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(4)]),:);
-    e5 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(5)]),:);
-    d4to5 = sqrt(sum((e4-e5).^2)); % distance of elec 4 to 5
-    if d4to5 < 15
-      GridDim(1) = 4; GridDim(2) = 5;
-    else
-      GridDim(1) = 5; GridDim(2) = 4;
-    end
-  elseif isequal(numel(Grid2Elec{g}), 16)
-    e4 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(4)]),:);
-    e5 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(5)]),:);
-    e9 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(9)]),:);
-    d4to5 = sqrt(sum((e4-e5).^2)); % distance of elec 4 to 5
-    d4to9 = sqrt(sum((e4-e9).^2)); % distance of elec 4 to 9
-    if d4to5 > 15 && d4to9 > 15
-      GridDim(1) = 4; GridDim(2) = 4;
-    elseif d4to5 < 15 && d4to9 > 15
-      GridDim(1) = 2; GridDim(2) = 8;
-    else
-      GridDim(1) = 1; GridDim(2) = 16;
-    end
-  elseif isequal(numel(Grid2Elec{g}), 12)
-    e6 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(6)]),:);
-    e7 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(7)]),:);
-    d6to7 = sqrt(sum((e6-e7).^2)); % distance of elec 6 to 7
-    if d6to7 > 15
-      GridDim(1) = 2; GridDim(2) = 6;
-    else
-      GridDim(1) = 1; GridDim(2) = 12;
-    end
-  elseif isequal(numel(Grid2Elec{g}), 10)
-    GridDim(1) = 1; GridDim(2) = 10;
-  elseif isequal(numel(Grid2Elec{g}), 8)
-    e4 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(4)]),:);
-    e5 = elec.elecpos(match_str(elec.label, [GridDescript{g} num2str(5)]),:);
-    d4to5 = sqrt(sum((e4-e5).^2)); % distance of elec 4 to 5
-    if d4to5 < 15
-      GridDim(1) = 1; GridDim(2) = 8;
-    else
-      GridDim(1) = 2; GridDim(2) = 4;
-    end
-  elseif isequal(numel(Grid2Elec{g}), 6)
-    GridDim(1) = 1; GridDim(2) = 6;
   else
-      error('At least one of the electrode tracts or grids has dimensions that are not supported by write_bioimage_mgrid. If electrodes are missing from a grid, enter NaN(1,3) for electrode position');
+    GridDim(1) = 1;
+    GridDim(2) = numel(Grid2Elec{g});
   end
   fprintf(fid, [' ' num2str(GridDim(1)) ' ' num2str(GridDim(2)) '\n']);
   fprintf(fid, '#Electrode Spacing\n');
