@@ -1380,11 +1380,11 @@ switch cfg.method
     if istrue(cfg.colorbar)
       if ~strcmp(cfg.slice, '2d')
         colorbar;
-        else % position the colorbar so that it does not change the axis of the last subplot
-          subplotpos = get(subplot(cfg.nslices,1,cfg.nslices), 'Position'); % position of the bottom or rightmost subplot
-          colorbar('Position', [subplotpos(1)+subplotpos(3)+0.01 subplotpos(2) .03 subplotpos(2)+subplotpos(4)*(cfg.nslices+.1)]);
+      else % position the colorbar so that it does not change the axis of the last subplot
+        subplotpos = get(subplot(cfg.nslices,1,cfg.nslices), 'Position'); % position of the bottom or rightmost subplot
+        colorbar('Position', [subplotpos(1)+subplotpos(3)+0.01 subplotpos(2) .03 subplotpos(2)+subplotpos(4)*(cfg.nslices+.1)]);
       end
-    end   
+    end
     
   otherwise
     error('unsupported method "%s"', cfg.method);
