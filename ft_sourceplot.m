@@ -30,7 +30,7 @@ function ft_sourceplot(cfg, functional, anatomical)
 %                       'surface',    plots the data on a 3D brain surface
 %                       'glassbrain', plots a max-projection through the brain
 %                       'vertex',     plots the grid points or vertices scaled according to the functional value
-%                       'elec',       plot the data as points, spheres, or clouds scaled according to the functional value
+%                       'cloud',      plot the data as clouds, spheres, or points scaled according to the functional value
 %
 %
 %   cfg.anaparameter  = string, field in data with the anatomical data (default = 'anatomy' if present in data)
@@ -166,8 +166,8 @@ function ft_sourceplot(cfg, functional, anatomical)
 %                        or an Nx3 or Nx1 array where N is the number of vertices
 %   cfg.edgecolor      = [r g b] values or string, for example 'brain', 'cortex', 'skin', 'black', 'red', 'r'
 %
-% When cfg.method = 'cloud', the functional data will be rendered as as spheres or 
-% point clouds around the sensor positions. These spheres or point clouds can either
+% When cfg.method = 'cloud', the functional data will be rendered as as clouds (groups of points), spheres, or 
+% single points at each sensor position. These spheres or point clouds can either
 % be viewed in 3D or as 2D slices. The 'anatomical' input may also consist of 
 % a single or multiple triangulated surface mesh(es) in an Nx1 cell-array
 % to be plotted with the interpolated functional data (see FT_PLOT_CLOUD)

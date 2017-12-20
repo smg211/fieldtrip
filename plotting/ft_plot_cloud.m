@@ -49,7 +49,7 @@ function ft_plot_cloud(pos, val, varargin)
 %
 % See also FT_ELECTRODEPLACEMENT, FT_PLOT_TOPO, FT_PLOT_TOPO3D
 
-% The following inputs apply when cloudtype = 'surf' and slice = '2d'
+% The following inputs apply when 'cloudtype' = 'surf' and 'slice' = '2d'
 %   'ncirc'           = scalar, number of concentric circles to plot for each
 %                       cloud slice (default = 15) make this hidden or scale
 %   'scalealpha'      = 'yes' or 'no', scale the maximum alpha value of the center circle
@@ -373,7 +373,6 @@ end
 
 % draw figure
 if strcmp(sli, '2d')
-  
   % Pre-allocate interpolation limits of each slice to facilitate
   % finding overall limits of all slices after plotting
   xsmax = NaN(numel(slicepos),1); xsmin = NaN(numel(slicepos),1);
