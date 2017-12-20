@@ -166,14 +166,14 @@ function ft_sourceplot(cfg, functional, anatomical)
 %                        or an Nx3 or Nx1 array where N is the number of vertices
 %   cfg.edgecolor      = [r g b] values or string, for example 'brain', 'cortex', 'skin', 'black', 'red', 'r'
 %
-% When cfg.method = 'elec', the functional data will be rendered as as spheres or 
+% When cfg.method = 'cloud', the functional data will be rendered as as spheres or 
 % point clouds around the sensor positions. These spheres or point clouds can either
 % be viewed in 3D or as 2D slices. The 'anatomical' input may also consist of 
 % a single or multiple triangulated surface mesh(es) in an Nx1 cell-array
-% to be plotted with the interpolated functional data (see FT_PLOT_IEEG)
+% to be plotted with the interpolated functional data (see FT_PLOT_CLOUD)
 %
 % The following parameters apply to cfg.method='elec' 
-%   cfg.elecshape       = 'point' plots a single point at each sensor position
+%   cfg.cloudtype       = 'point' plots a single point at each sensor position
 %                         'cloud' (default) plots each a group of spherically arranged points at each sensor position
 %                         'surf' plots a single spherical surface mesh at each sensor position
 %   cfg.radius          = scalar, maximum radius of cloud (default = 4)
@@ -1352,7 +1352,7 @@ switch cfg.method
     % some defaults depend on the geometrical units
     scale = ft_scalingfactor('mm', functional.unit);
     % set the defaults for method=cloud
-    cfg.elecshape          = ft_getopt(cfg, 'elecshape', 'cloud');
+    cfg.cloudtype          = ft_getopt(cfg, 'cloudtype', 'cloud');
     cfg.radius             = ft_getopt(cfg, 'radius', 4*scale);
     cfg.rmin               = ft_getopt(cfg, 'rmin', 1*scale);
     cfg.scalerad           = ft_getopt(cfg, 'scalerad', 'yes');
@@ -1391,11 +1391,11 @@ switch cfg.method
       end
     end
     
-    ft_plot_ieeg(pos, fun, 'mesh', anatomical,...
+    ft_plot_cloud(pos, fun, 'mesh', anatomical,...
       'radius', cfg.radius, 'rmin', cfg.rmin, 'scalerad', cfg.scalerad, ...
       'ptsize', cfg.ptsize, 'ptdensity', cfg.ptdensity, 'ptgradient', cfg.ptgradient,...
       'colorgrad', cfg.colorgrad, 'colormap', cfg.funcolormap, 'clim', [fcolmin fcolmax], ...
-      'unit', functional.unit, 'slice', cfg.slice, 'elecshape', cfg.elecshape, ...
+      'unit', functional.unit, 'slice', cfg.slice, 'cloudtype', cfg.cloudtype, ...
       'ori', cfg.ori, 'slicepos', cfg.slicepos, 'nslices', cfg.nslices, 'minspace', cfg.minspace,...
       'intersectcolor', cfg.intersectcolor, 'intersectlinestyle', cfg.intersectlinestyle, ...
       'intersectlinewidth', cfg.intersectlinewidth, 'ncirc', cfg.ncirc, ...
