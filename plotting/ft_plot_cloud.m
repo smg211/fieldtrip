@@ -5,7 +5,7 @@ function ft_plot_cloud(pos, val, varargin)
 % clouds. This is for example useful for spectral power on depth (sEEG) electrodes.
 %
 % Use as
-%   ft_plot_ieeg(pos, val, ...)
+%   ft_plot_cloud(pos, val, ...)
 % where the first argument are the sensor positions and the second argument are the
 % sensor values.
 %
